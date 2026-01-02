@@ -1,0 +1,41 @@
+{
+  "product": {
+    "description": "The product object contains details about a specific product.",
+    "link": "https://shopify.dev/docs/api/liquid/objects/product",
+    "properties": {
+      "title": { "description": "The title of the product.", "link": "#title" },
+      "handle": { "description": "The unique handle of the product.", "link": "#handle" },
+      "price": { "description": "The price of the product.", "link": "#price" },
+      "variants": { "description": "List of the product's variants.", "link": "#variants", "type": "variant" },
+      "available": { "description": "Returns true if the product is available.", "link": "#available" }
+    }
+  },
+  "variant": {
+    "description": "A specific product variant.",
+    "link": "https://shopify.dev/docs/api/liquid/objects/variant",
+    "properties": {
+      "id": { "description": "The unique ID of the variant.", "link": "#id" },
+      "title": { "description": "The title of the variant.", "link": "#title" },
+      "price": { "description": "The price of the variant.", "link": "#price" },
+      "sku": { "description": "The SKU of the variant.", "link": "#sku" }
+    }
+  },
+  "cart": {
+    "description": "The cart object.",
+    "link": "https://shopify.dev/docs/api/liquid/objects/cart",
+    "properties": {
+      "item_count": { "description": "Total items in the cart.", "link": "#item_count" },
+      "total_price": { "description": "The total price of all items in the cart.", "link": "#total_price" },
+      "items": { "description": "The line items in the cart.", "link": "#items", "type": "line_item" }
+    }
+  },
+  "line_item": {
+    "description": "A single line item in the cart.",
+    "link": "https://shopify.dev/docs/api/liquid/objects/line_item",
+    "properties": {
+      "product_id": { "description": "The ID of the product for the line item.", "link": "#product_id" },
+      "quantity": { "description": "The quantity of the line item.", "link": "#quantity" },
+      "original_line_price": { "description": "The price before discounts.", "link": "#original_line_price" }
+    }
+  }
+}
