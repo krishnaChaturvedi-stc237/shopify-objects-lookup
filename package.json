@@ -2,7 +2,7 @@
   "name": "shopify-object-lookup",
   "displayName": "Shopify Objects Lookup Pro",
   "description": "Context-aware autocomplete and schema reference for Shopify 2.0 Liquid development.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "KrishnaChaturvedi",
   "license": "MIT",
   "icon": "icon.png",
