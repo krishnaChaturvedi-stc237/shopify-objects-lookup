@@ -2,7 +2,7 @@
   "name": "shopify-object-lookup",
   "displayName": "Shopify Objects Lookup Pro",
   "description": "Context-aware autocomplete and schema reference for Shopify 2.0 Liquid development.",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "publisher": "KrishnaChaturvedi",
   "license": "MIT",
   "icon": "icon.png",
@@ -44,7 +44,10 @@
     "vscode:prepublish": "npm run package",
     "compile": "node esbuild.js",
     "package": "node esbuild.js --production",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json"
   },
   "devDependencies": {
     "@types/vscode": "^1.90.0",
