@@ -1,41 +1,946 @@
 {
-  "product": {
-    "description": "The product object contains details about a specific product.",
-    "link": "https://shopify.dev/docs/api/liquid/objects/product",
-    "properties": {
-      "title": { "description": "The title of the product.", "link": "#title" },
-      "handle": { "description": "The unique handle of the product.", "link": "#handle" },
-      "price": { "description": "The price of the product.", "link": "#price" },
-      "variants": { "description": "List of the product's variants.", "link": "#variants", "type": "variant" },
-      "available": { "description": "Returns true if the product is available.", "link": "#available" }
+    "product": {
+        "description": "A product in the store. Use this object to access details like pricing, images, and variants.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/product",
+        "properties": {
+            "available": {
+                "description": "Returns true if at least one of the variants of the product is available. Returns false if not. Availability is determined by inventory quantity, inventory policy, or associated delivery profiles.",
+                "link": "#product-available",
+                "mock_value": true
+            },
+            "category": {
+                "description": "The taxonomy category for the product.",
+                "link": "#product-category",
+                "mock_value": {},
+                "type": "taxonomy_category"
+            },
+            "collections": {
+                "description": "The collections that the product belongs to. Note: Only collections available on the Online Store sales channel are included.",
+                "link": "#product-collections",
+                "mock_value": [],
+                "type": "collection_array"
+            },
+            "compare_at_price": {
+                "description": "The lowest 'compare at' price of any variants of the product in the currency's subunit. Use money filters to format this value.",
+                "link": "#product-compare_at_price",
+                "mock_value": "25.00"
+            },
+            "compare_at_price_max": {
+                "description": "The highest 'compare at' price of any variants of the product in the currency's subunit.",
+                "link": "#product-compare_at_price_max",
+                "mock_value": "25.00"
+            },
+            "compare_at_price_min": {
+                "description": "The lowest 'compare at' price of any variants of the product in the currency's subunit. Same as product.compare_at_price.",
+                "link": "#product-compare_at_price_min",
+                "mock_value": "25.00"
+            },
+            "compare_at_price_varies": {
+                "description": "Returns true if the variant compare at prices of the product vary. Returns false if not.",
+                "link": "#product-compare_at_price_varies",
+                "mock_value": false
+            },
+            "content": {
+                "description": "The description of the product. This is the same value as product.description.",
+                "link": "#product-content",
+                "mock_value": "<h3>Are you low on health?</h3><p>We've got the potion for you!</p>"
+            },
+            "created_at": {
+                "description": "A timestamp for when the product was created. Use the 'date' filter to format this value.",
+                "link": "#product-created_at",
+                "mock_value": "2022-04-13 14:46:16 -0400"
+            },
+            "description": {
+                "description": "The description of the product. This is the same value as product.content.",
+                "link": "#product-description",
+                "mock_value": "<h3>Are you low on health?</h3><p>We've got the potion for you!</p>"
+            },
+            "featured_image": {
+                "description": "The first (featured) image attached to the product.",
+                "link": "#product-featured_image",
+                "mock_value": {},
+                "type": "image"
+            },
+            "featured_media": {
+                "description": "The first (featured) media attached to the product. In search results, returns the most relevant variant media.",
+                "link": "#product-featured_media",
+                "mock_value": {},
+                "type": "media"
+            },
+            "first_available_variant": {
+                "description": "The first available variant of the product based on inventory quantity and policy.",
+                "link": "#product-first_available_variant",
+                "mock_value": {},
+                "type": "variant"
+            },
+            "gift_card?": {
+                "description": "Returns true if the product is a gift card. Returns false if not.",
+                "link": "#product-gift_card",
+                "mock_value": false
+            },
+            "handle": {
+                "description": "The unique handle of the product used in the URL.",
+                "link": "#product-handle",
+                "mock_value": "health-potion"
+            },
+            "has_only_default_variant": {
+                "description": "Returns true if the product doesn't have any options (only the default variant). Returns false if not.",
+                "link": "#product-has_only_default_variant",
+                "mock_value": false
+            },
+            "id": {
+                "description": "The ID of the product.",
+                "link": "#product-id",
+                "mock_value": 6786188247105
+            },
+            "images": {
+                "description": "An array of all images attached to the product.",
+                "link": "#product-images",
+                "mock_value": [],
+                "type": "image_array"
+            },
+            "media": {
+                "description": "The media attached to the product (images, videos, 3D models), sorted by date added.",
+                "link": "#product-media",
+                "mock_value": [],
+                "type": "media_array"
+            },
+            "metafields": {
+                "description": "The metafields applied to the product context.",
+                "link": "#product-metafields",
+                "mock_value": {},
+                "type": "metafield"
+            },
+            "options": {
+                "description": "The option names of the product (e.g., Size, Color).",
+                "link": "#product-options",
+                "mock_value": [
+                    "Size",
+                    "Strength"
+                ]
+            },
+            "options_by_name": {
+                "description": "Allows you to access a specific product option by its name (case-insensitive).",
+                "link": "#product-options_by_name",
+                "mock_value": {}
+            },
+            "options_with_values": {
+                "description": "The options on the product including their associated values.",
+                "link": "#product-options_with_values",
+                "mock_value": [],
+                "type": "product_option_array"
+            },
+            "price": {
+                "description": "The lowest price of any variants of the product. Same as product.price_min.",
+                "link": "#product-price",
+                "mock_value": "10.00"
+            },
+            "price_max": {
+                "description": "The highest price of any variants of the product in the currency's subunit.",
+                "link": "#product-price_max",
+                "mock_value": "22.00"
+            },
+            "price_min": {
+                "description": "The lowest price of any variants of the product in the currency's subunit. Same as product.price.",
+                "link": "#product-price_min",
+                "mock_value": "10.00"
+            },
+            "price_varies": {
+                "description": "Returns true if the product's variant prices vary. Returns false if not.",
+                "link": "#product-price_varies",
+                "mock_value": true
+            },
+            "published_at": {
+                "description": "A timestamp for when the product was published. Use the 'date' filter to format this value.",
+                "link": "#product-published_at",
+                "mock_value": "2022-04-13 14:53:34 -0400"
+            },
+            "quantity_price_breaks_configured?": {
+                "description": "Returns true if the product has at least one variant with quantity price breaks in the current customer context.",
+                "link": "#product-quantity_price_breaks_configured",
+                "mock_value": false
+            },
+            "requires_selling_plan": {
+                "description": "Returns true if all of the variants of the product require a selling plan. Returns false if not.",
+                "link": "#product-requires_selling_plan",
+                "mock_value": false
+            },
+            "selected_or_first_available_selling_plan_allocation": {
+                "description": "The currently selected, or first available, selling plan allocation. Returns nil if no selling plans exist.",
+                "link": "#product-selected_or_first_available_selling_plan_allocation",
+                "mock_value": {}
+            },
+            "selected_or_first_available_variant": {
+                "description": "The currently selected or first available variant of the product. Based on the 'variant' URL parameter or availability.",
+                "link": "#product-selected_or_first_available_variant",
+                "mock_value": {},
+                "type": "variant"
+            },
+            "selected_selling_plan": {
+                "description": "The currently selected selling plan determined by the 'selling_plan' URL parameter.",
+                "link": "#product-selected_selling_plan",
+                "mock_value": null
+            },
+            "selected_selling_plan_allocation": {
+                "description": "The currently selected selling plan allocation for the currently selected variant.",
+                "link": "#product-selected_selling_plan_allocation",
+                "mock_value": null
+            },
+            "selected_variant": {
+                "description": "The currently selected variant of the product based on URL parameter or search relevance. Returns nil if none selected.",
+                "link": "#product-selected_variant",
+                "mock_value": null,
+                "type": "variant"
+            },
+            "selling_plan_groups": {
+                "description": "The selling plan groups that the variants of the product are included in.",
+                "link": "#product-selling_plan_groups",
+                "mock_value": [],
+                "type": "selling_plan_group_array"
+            },
+            "tags": {
+                "description": "The tags of the product returned in alphabetical order.",
+                "link": "#product-tags",
+                "mock_value": [
+                    "healing"
+                ]
+            },
+            "template_suffix": {
+                "description": "The name of the custom template assigned to the product, excluding prefix and extension.",
+                "link": "#product-template_suffix",
+                "mock_value": ""
+            },
+            "title": {
+                "description": "The title of the product.",
+                "link": "#product-title",
+                "mock_value": "Health potion"
+            },
+            "type": {
+                "description": "The type of the product.",
+                "link": "#product-type",
+                "mock_value": {}
+            },
+            "url": {
+                "description": "The relative URL of the product. May contain variant parameters in search or recommendation contexts.",
+                "link": "#product-url",
+                "mock_value": "/products/health-potion"
+            },
+            "variants": {
+                "description": "The variants of the product. Returns a maximum of 250 variants when unpaginated.",
+                "link": "#product-variants",
+                "mock_value": [],
+                "type": "variant_array"
+            },
+            "variants_count": {
+                "description": "The total number of variants for the product.",
+                "link": "#product-variants_count",
+                "mock_value": 9
+            },
+            "vendor": {
+                "description": "The vendor of the product.",
+                "link": "#product-vendor",
+                "mock_value": "Polina's Potent Potions"
+            }
+        }
+    },
+    "additional_checkout_buttons": {
+        "description": "Returns true if there are additional checkout buttons (like Apple Pay) available.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/additional_checkout_buttons",
+        "properties": {}
+    },
+    "address": {
+        "description": "Represents a physical address (e.g., customer or shipping address).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/address",
+        "properties": {}
+    },
+    "all_country_option_tags": {
+        "description": "Returns a list of option tags for every country.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/all_country_option_tags",
+        "properties": {}
+    },
+    "all_products": {
+        "description": "Access all products in the store by handle (e.g., all_products['handle']).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/all_products",
+        "properties": {}
+    },
+    "app": {
+        "description": "The app object associated with the current request.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/app",
+        "properties": {}
+    },
+    "article": {
+        "description": "An individual blog post/article.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/article",
+        "properties": {}
+    },
+    "articles": {
+        "description": "A list of articles within a blog.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/articles",
+        "properties": {}
+    },
+    "block": {
+        "description": "The block object inside a Liquid section.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/block",
+        "properties": {
+            "id": {
+                "description": "The unique ID of the block.",
+                "link": "#block-id",
+                "mock_value": "block_123"
+            },
+            "settings": {
+                "description": "The settings defined in the block schema.",
+                "link": "#block-settings",
+                "mock_value": {}
+            }
+        }
+    },
+    "blog": {
+        "description": "The blog object for the current page.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/blog",
+        "properties": {}
+    },
+    "blogs": {
+        "description": "All blogs in the shop accessible by handle.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/blogs",
+        "properties": {}
+    },
+    "brand": {
+        "description": "Global brand settings for the store.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/brand",
+        "properties": {}
+    },
+    "brand_color": {
+        "description": "Specific brand color configurations.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/brand_color",
+        "properties": {}
+    },
+    "canonical_url": {
+        "description": "The canonical URL of the current page.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/canonical_url",
+        "properties": {}
+    },
+    "cart": {
+        "description": "The cart object for the current session.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/cart",
+        "properties": {
+            "item_count": {
+                "description": "Total items in cart.",
+                "mock_value": 2
+            },
+            "total_price": {
+                "description": "Total price of cart.",
+                "mock_value": 2000
+            }
+        }
+    },
+    "checkout": {
+        "description": "The checkout object available on checkout pages.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/checkout",
+        "properties": {}
+    },
+    "closest": {
+        "description": "The closest parent context object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/closest",
+        "properties": {}
+    },
+    "collection": {
+        "description": "The current collection being viewed.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/collection",
+        "properties": {}
+    },
+    "collections": {
+        "description": "All collections in the store.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/collections",
+        "properties": {}
+    },
+    "color": {
+        "description": "An individual color object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/color",
+        "properties": {}
+    },
+    "color_scheme": {
+        "description": "The color scheme assigned to a section or block.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/color_scheme",
+        "properties": {}
+    },
+    "color_scheme_group": {
+        "description": "A group of color schemes.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/color_scheme_group",
+        "properties": {}
+    },
+    "comment": {
+        "description": "A comment left on a blog article.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/comment",
+        "properties": {}
+    },
+    "company": {
+        "description": "The B2B company associated with the customer.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/company",
+        "properties": {}
+    },
+    "company_address": {
+        "description": "The address of a B2B company.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/company_address",
+        "properties": {}
+    },
+    "company_location": {
+        "description": "A specific location for a B2B company.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/company_location",
+        "properties": {}
+    },
+    "content_for_additional_checkout_buttons": {
+        "description": "The rendered buttons for additional checkout providers.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/content_for_additional_checkout_buttons",
+        "properties": {}
+    },
+    "content_for_header": {
+        "description": "Required Shopify scripts and meta tags for the header.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/content_for_header",
+        "properties": {}
+    },
+    "content_for_index": {
+        "description": "The dynamic sections for the homepage.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/content_for_index",
+        "properties": {}
+    },
+    "content_for_layout": {
+        "description": "The core content rendered from a template.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/content_for_layout",
+        "properties": {}
+    },
+    "country": {
+        "description": "A country object for localization.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/country",
+        "properties": {}
+    },
+    "country_option_tags": {
+        "description": "Rendered option tags for country selection.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/country_option_tags",
+        "properties": {}
+    },
+    "currency": {
+        "description": "Information about the store currency.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/currency",
+        "properties": {}
+    },
+    "current_page": {
+        "description": "The number of the current page in a paginated list.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/current_page",
+        "properties": {}
+    },
+    "current_tags": {
+        "description": "The tags applied to the current view.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/current_tags",
+        "properties": {}
+    },
+    "customer": {
+        "description": "The currently logged-in customer.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/customer",
+        "properties": {}
+    },
+    "customer_payment_method": {
+        "description": "A saved payment method for a customer.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/customer_payment_method",
+        "properties": {}
+    },
+    "discount": {
+        "description": "A discount applied to an order.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/discount",
+        "properties": {}
+    },
+    "discount_allocation": {
+        "description": "The allocation of a discount to a specific line item.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/discount_allocation",
+        "properties": {}
+    },
+    "discount_application": {
+        "description": "The logic behind an applied discount.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/discount_application",
+        "properties": {}
+    },
+    "external_video": {
+        "description": "A video hosted on a third-party service (YouTube/Vimeo).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/external_video",
+        "properties": {}
+    },
+    "filter": {
+        "description": "A storefront filter (e.g., Price, Availability).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/filter",
+        "properties": {}
+    },
+    "filter_value": {
+        "description": "A specific value within a filter.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/filter_value",
+        "properties": {}
+    },
+    "filter_value_display": {
+        "description": "The display configuration for a filter value.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/filter_value_display",
+        "properties": {}
+    },
+    "focal_point": {
+        "description": "The focal point of an image.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/focal_point",
+        "properties": {}
+    },
+    "font": {
+        "description": "A typography font object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/font",
+        "properties": {}
+    },
+    "forloop": {
+        "description": "The helper object inside a Liquid 'for' loop.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/forloop",
+        "properties": {}
+    },
+    "form": {
+        "description": "The current Liquid form context.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/form",
+        "properties": {}
+    },
+    "form_errors": {
+        "description": "Errors returned from a form submission.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/form_errors",
+        "properties": {}
+    },
+    "fulfillment": {
+        "description": "An order fulfillment object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/fulfillment",
+        "properties": {}
+    },
+    "generic_file": {
+        "description": "A generic file uploaded to Shopify Files.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/generic_file",
+        "properties": {}
+    },
+    "gift_card": {
+        "description": "Details about a specific gift card.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/gift_card",
+        "properties": {}
+    },
+    "group": {
+        "description": "A grouped object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/group",
+        "properties": {}
+    },
+    "handle": {
+        "description": "The current object's handle.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/handle",
+        "properties": {}
+    },
+    "image": {
+        "description": "An image asset.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/image",
+        "properties": {}
+    },
+    "image_presentation": {
+        "description": "Display properties for an image.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/image_presentation",
+        "properties": {}
+    },
+    "images": {
+        "description": "A collection of image objects.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/images",
+        "properties": {}
+    },
+    "instructions": {
+        "description": "Specific processing or rendering instructions.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/instructions",
+        "properties": {}
+    },
+    "line_item": {
+        "description": "An individual item in a cart or order.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/line_item",
+        "properties": {}
+    },
+    "link": {
+        "description": "A single link in a navigation menu.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/link",
+        "properties": {}
+    },
+    "linklist": {
+        "description": "A navigation menu (link list).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/linklist",
+        "properties": {}
+    },
+    "linklists": {
+        "description": "All menus in the store accessible by handle.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/linklists",
+        "properties": {}
+    },
+    "localization": {
+        "description": "Current shop localization settings (Country, Language).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/localization",
+        "properties": {}
+    },
+    "location": {
+        "description": "A physical store location.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/location",
+        "properties": {}
+    },
+    "market": {
+        "description": "The current Shopify Market.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/market",
+        "properties": {}
+    },
+    "measurement": {
+        "description": "A numeric value with a unit (e.g., Weight).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/measurement",
+        "properties": {}
+    },
+    "media": {
+        "description": "A generic media object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/media",
+        "properties": {}
+    },
+    "metafield": {
+        "description": "A single metafield value.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/metafield",
+        "properties": {}
+    },
+    "metaobject": {
+        "description": "An entry of a specific Metaobject definition.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/metaobject",
+        "properties": {}
+    },
+    "metaobject_definition": {
+        "description": "The schema definition of a Metaobject.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/metaobject_definition",
+        "properties": {}
+    },
+    "metaobject_system": {
+        "description": "System metadata for a Metaobject.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/metaobject_system",
+        "properties": {}
+    },
+    "metaobjects": {
+        "description": "Access Metaobject entries by handle.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/metaobjects",
+        "properties": {}
+    },
+    "model": {
+        "description": "A 3D model object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/model",
+        "properties": {}
+    },
+    "model_source": {
+        "description": "The file source for a 3D model.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/model_source",
+        "properties": {}
+    },
+    "money": {
+        "description": "A formatted money value.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/money",
+        "properties": {}
+    },
+    "order": {
+        "description": "A completed customer order.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/order",
+        "properties": {}
+    },
+    "page": {
+        "description": "An individual Shopify page.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/page",
+        "properties": {}
+    },
+    "page_description": {
+        "description": "The description of the current page (meta description).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/page_description",
+        "properties": {}
+    },
+    "page_image": {
+        "description": "The social sharing image for the current page.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/page_image",
+        "properties": {}
+    },
+    "page_title": {
+        "description": "The SEO title of the current page.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/page_title",
+        "properties": {}
+    },
+    "pages": {
+        "description": "All pages accessible by handle.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/pages",
+        "properties": {}
+    },
+    "paginate": {
+        "description": "The helper object for paginated lists.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/paginate",
+        "properties": {}
+    },
+    "parent_relationship": {
+        "description": "Link to a parent object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/parent_relationship",
+        "properties": {}
+    },
+    "part": {
+        "description": "A part of a paginated list.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/part",
+        "properties": {}
+    },
+    "pending_payment_instruction_input": {
+        "description": "Instructions for pending payments.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/pending_payment_instruction_input",
+        "properties": {}
+    },
+    "policy": {
+        "description": "A legal policy (Privacy, Shipping, etc.).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/policy",
+        "properties": {}
+    },
+    "powered_by_link": {
+        "description": "The 'Powered by Shopify' HTML link.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/powered_by_link",
+        "properties": {}
+    },
+    "predictive_search": {
+        "description": "Real-time search results.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/predictive_search",
+        "properties": {}
+    },
+    "predictive_search_resources": {
+        "description": "Specific items returned by predictive search.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/predictive_search_resources",
+        "properties": {}
+    },
+    "product_option": {
+        "description": "An individual product option (e.g., Color).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/product_option",
+        "properties": {}
+    },
+    "product_option_value": {
+        "description": "A specific value for a product option (e.g., Red).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/product_option_value",
+        "properties": {}
+    },
+    "quantity_price_break": {
+        "description": "A bulk discount price break.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/quantity_price_break",
+        "properties": {}
+    },
+    "quantity_rule": {
+        "description": "Rules for item quantities (Minimum, Increment).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/quantity_rule",
+        "properties": {}
+    },
+    "rating": {
+        "description": "A product rating object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/rating",
+        "properties": {}
+    },
+    "recipient": {
+        "description": "The recipient of a gift card.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/recipient",
+        "properties": {}
+    },
+    "recommendations": {
+        "description": "Product recommendations based on current view.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/recommendations",
+        "properties": {}
+    },
+    "remote_details": {
+        "description": "Details about a remote product or shop.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/remote_details",
+        "properties": {}
+    },
+    "remote_product": {
+        "description": "A product from a different Shopify shop.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/remote_product",
+        "properties": {}
+    },
+    "remote_shop": {
+        "description": "A different Shopify shop in a multi-shop setup.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/remote_shop",
+        "properties": {}
+    },
+    "request": {
+        "description": "Information about the current HTTP request.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/request",
+        "properties": {}
+    },
+    "robots": {
+        "description": "The robots.txt directives.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/robots",
+        "properties": {}
+    },
+    "routes": {
+        "description": "Shopify system routes (Search, Cart, etc.).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/routes",
+        "properties": {}
+    },
+    "rule": {
+        "description": "A system rule.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/rule",
+        "properties": {}
+    },
+    "script": {
+        "description": "An individual custom script.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/script",
+        "properties": {}
+    },
+    "scripts": {
+        "description": "All scripts in the current context.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/scripts",
+        "properties": {}
+    },
+    "search": {
+        "description": "The current search context.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/search",
+        "properties": {}
+    },
+    "section": {
+        "description": "The current Liquid section.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/section",
+        "properties": {}
+    },
+    "selling_plan": {
+        "description": "A subscription or purchase option.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/selling_plan",
+        "properties": {}
+    },
+    "selling_plan_allocation": {
+        "description": "The allocation of a selling plan to a variant.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/selling_plan_allocation",
+        "properties": {}
+    },
+    "selling_plan_allocation_price_adjustment": {
+        "description": "The price adjustment for a specific allocation.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/selling_plan_allocation_price_adjustment",
+        "properties": {}
+    },
+    "selling_plan_checkout_charge": {
+        "description": "The checkout charge for a selling plan.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/selling_plan_checkout_charge",
+        "properties": {}
+    },
+    "selling_plan_group": {
+        "description": "A group of associated selling plans.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/selling_plan_group",
+        "properties": {}
+    },
+    "selling_plan_group_option": {
+        "description": "An individual option within a selling plan group.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/selling_plan_group_option",
+        "properties": {}
+    },
+    "selling_plan_option": {
+        "description": "A specific option for a selling plan.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/selling_plan_option",
+        "properties": {}
+    },
+    "selling_plan_price_adjustment": {
+        "description": "Adjustments to the price based on a selling plan.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/selling_plan_price_adjustment",
+        "properties": {}
+    },
+    "settings": {
+        "description": "Global theme settings defined in settings_schema.json.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/settings",
+        "properties": {}
+    },
+    "shipping_method": {
+        "description": "A specific shipping option.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/shipping_method",
+        "properties": {}
+    },
+    "shop": {
+        "description": "General information about the shop.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/shop",
+        "properties": {}
+    },
+    "shop_locale": {
+        "description": "Current active shop language.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/shop_locale",
+        "properties": {}
+    },
+    "sitemap": {
+        "description": "The sitemap configuration.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/sitemap",
+        "properties": {}
+    },
+    "sort_option": {
+        "description": "An option for sorting collection results.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/sort_option",
+        "properties": {}
+    },
+    "store_availability": {
+        "description": "In-store pickup availability for a variant.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/store_availability",
+        "properties": {}
+    },
+    "store_credit_account": {
+        "description": "Store credit details for a customer.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/store_credit_account",
+        "properties": {}
+    },
+    "swatch": {
+        "description": "A color or image swatch.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/swatch",
+        "properties": {}
+    },
+    "tablerowloop": {
+        "description": "Helper object inside a 'tablerow' tag.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/tablerowloop",
+        "properties": {}
+    },
+    "tax_line": {
+        "description": "A specific tax line on an order or line item.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/tax_line",
+        "properties": {}
+    },
+    "taxonomy_category": {
+        "description": "The taxonomy category object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/taxonomy_category",
+        "properties": {}
+    },
+    "template": {
+        "description": "Information about the current template file.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/template",
+        "properties": {}
+    },
+    "theme": {
+        "description": "Information about the current theme.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/theme",
+        "properties": {}
+    },
+    "transaction": {
+        "description": "A financial transaction for an order.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/transaction",
+        "properties": {}
+    },
+    "transaction_payment_details": {
+        "description": "Specific payment details for a transaction.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/transaction_payment_details",
+        "properties": {}
+    },
+    "unit_price_measurement": {
+        "description": "Unit pricing information (e.g., price per gram).",
+        "link": "https://shopify.dev/docs/api/liquid/objects/unit_price_measurement",
+        "properties": {}
+    },
+    "user": {
+        "description": "The admin user currently logged in.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/user",
+        "properties": {}
+    },
+    "user_agent": {
+        "description": "The browser user agent string.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/user_agent",
+        "properties": {}
+    },
+    "variant": {
+        "description": "An individual product variant.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/variant",
+        "properties": {}
+    },
+    "video": {
+        "description": "A Shopify-hosted video object.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/video",
+        "properties": {}
+    },
+    "video_source": {
+        "description": "The file source for a video asset.",
+        "link": "https://shopify.dev/docs/api/liquid/objects/video_source",
+        "properties": {}
     }
-  },
-  "variant": {
-    "description": "A specific product variant.",
-    "link": "https://shopify.dev/docs/api/liquid/objects/variant",
-    "properties": {
-      "id": { "description": "The unique ID of the variant.", "link": "#id" },
-      "title": { "description": "The title of the variant.", "link": "#title" },
-      "price": { "description": "The price of the variant.", "link": "#price" },
-      "sku": { "description": "The SKU of the variant.", "link": "#sku" }
-    }
-  },
-  "cart": {
-    "description": "The cart object.",
-    "link": "https://shopify.dev/docs/api/liquid/objects/cart",
-    "properties": {
-      "item_count": { "description": "Total items in the cart.", "link": "#item_count" },
-      "total_price": { "description": "The total price of all items in the cart.", "link": "#total_price" },
-      "items": { "description": "The line items in the cart.", "link": "#items", "type": "line_item" }
-    }
-  },
-  "line_item": {
-    "description": "A single line item in the cart.",
-    "link": "https://shopify.dev/docs/api/liquid/objects/line_item",
-    "properties": {
-      "product_id": { "description": "The ID of the product for the line item.", "link": "#product_id" },
-      "quantity": { "description": "The quantity of the line item.", "link": "#quantity" },
-      "original_line_price": { "description": "The price before discounts.", "link": "#original_line_price" }
-    }
-  }
 }

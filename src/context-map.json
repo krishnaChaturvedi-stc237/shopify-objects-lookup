@@ -1,0 +1,33 @@
+{
+  "globals": [
+    "collections", "pages", "all_products", "articles", "blogs", "cart", "closest", 
+    "content_for_header", "customer", "images", "linklists", "localization", 
+    "metaobjects", "request", "routes", "shop", "theme", "settings", "template", 
+    "additional_checkout_buttons", "all_country_option_tags", "canonical_url", 
+    "content_for_index", "content_for_layout", "country_option_tags", "current_page", 
+    "page_description", "page_image", "page_title", "powered_by_link", "scripts", "market"
+  ],
+  "structural": {
+    "sections": ["section", "closest"],
+    "blocks": ["block", "section", "closest"],
+    "snippets": ["section", "block"]
+  },
+  "template_map": {
+    "article": ["article", "blog"],
+    "blog": ["blog", "current_tags", "handle"],
+    "cart": ["cart"],
+    "collection": ["collection", "current_tags", "handle"],
+    "order": ["customer", "order"],
+    "addresses": ["customer"],
+    "account": ["customer"],
+    "gift_card": ["gift_card", "recipient"],
+    "metaobject": ["metaobject"],
+    "page": ["page", "handle"],
+    "product": ["product", "handle"],
+    "search": ["search"],
+    "robots": ["robots"],
+    "checkout": ["checkout"],
+    "predictive_search": ["predictive_search"]
+  },
+  "forbidden_in_sections": ["checkout", "gift_card", "recipient", "robots"]
+}

@@ -1,116 +1,268 @@
 import * as vscode from 'vscode';
 const shopifyData = require('./shopify-data.json');
+const contextMap = require('./context-map.json');
 
 export function activate(context: vscode.ExtensionContext) {
-	// This will now show up in your DEBUG CONSOLE
-	console.log('SHOPIFY EXTENSION DEPLOYED SUCCESSFULLY');
-
 	const provider = vscode.languages.registerCompletionItemProvider(
-		{ scheme: 'file', language: '*' }, // Temporary: Allow ALL file types for testing
+		{ scheme: 'file', language: 'liquid' },
 		{
-			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
-				const linePrefix = document.lineAt(position).text.substr(0, position.character);
-				// Debugging: This will show what you're typing in the console
-				console.log('Current line prefix:', linePrefix);
+			async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+				const linePrefix = document.lineAt(position).text.substr(0, position.character + 1);
+				const filePath = document.uri.fsPath;
 
-				// Get the word before the dot
-				// Example: "product." -> ["product", ""] -> objectName is "product"
-				// Pattern 1: User typed "obj." (Nested Suggestions)
-				if (linePrefix.endsWith('.')) {
-					const parts = linePrefix.trim().split(/[ .|{}]+/);
-                    console.log('Parts after split:', parts);
-					const objectName = parts[parts.length - 2];
+				// 1. Determine File Metadata
+				const currentFileName = filePath.split(/[\\/]/).pop()?.replace('.liquid', '') || '';
+				const fileType = getFileType(filePath); // 'sections' | 'snippets' | 'templates' | 'unknown'
 
-					console.log('Final Object Detected:', objectName);
+				// --- TRIGGER 1: "objects:" (The Categorized List) ---
+				if (linePrefix.endsWith('objs:')) {
+					console.log("currentFileName, fileType:", currentFileName, " -", fileType)
+					// Call your Discovery Engine with the fileType
+					const verifiedTemplates = await getVerifiedTemplates(currentFileName, fileType as any);
+					console.log('verified Templates:', verifiedTemplates)
 
-					const foundObj = (shopifyData as any)[objectName];
+					// Convert templates to objects (using Set to avoid duplicates)
+					const verifiedObjectsSet = new Set<string>();
+					verifiedTemplates.forEach(tName => {
+						const objs = (contextMap.template_map as any)[tName] || [];
+						objs.forEach((o: string) => verifiedObjectsSet.add(o));
+					});
 
-					if (foundObj && foundObj.properties) {
-						console.log(`Success: Found ${Object.keys(foundObj.properties).length} properties for ${objectName}`);
-						return createCompletionItems(foundObj.properties, foundObj.link, objectName);
-					} else {
-					    console.log(`No data found for object: "${objectName}"`);
-				    }
+					const items: vscode.CompletionItem[] = [];
+
+					// A. ADD GLOBALS (Priority 0)
+					contextMap.globals.forEach((obj: string) => {
+						const item = new vscode.CompletionItem(`Global > ${obj}`, vscode.CompletionItemKind.Module);
+						item.detail = "🌍 Global Shopify Object";
+						item.sortText = "0_" + obj;
+						items.push(item);
+					});
+
+					// B. ADD VERIFIED (Priority 1)
+					// Format: templates/product.json > product
+					verifiedTemplates.forEach(tName => {
+						const objs = (contextMap.template_map as any)[tName] || [];
+						objs.forEach((obj: string) => {
+							const itemLabel = `templates/${tName}.json > ${obj}`;
+							const item = new vscode.CompletionItem(itemLabel, vscode.CompletionItemKind.Interface);
+
+							item.detail = `✅ File is consumed by ${tName}.json`;
+							item.documentation = new vscode.MarkdownString(
+								`This section/snippet is currently used in **${tName}.json**. ` +
+								`The object \`${obj}\` is safe to use.`
+							);
+							item.sortText = "1_" + tName + obj;
+							items.push(item);
+						});
+					});
+
+					// C. ADD POTENTIAL (Priority 2)
+					// Format: product template > product
+					Object.keys(contextMap.template_map).forEach(tName => {
+						// Only show if the section is NOT already verified in this template
+						if (!verifiedTemplates.includes(tName)) {
+							const objs = (contextMap.template_map as any)[tName];
+							objs.forEach((obj: string) => {
+								const itemLabel = `${tName} template > ${obj}`;
+								const item = new vscode.CompletionItem(itemLabel, vscode.CompletionItemKind.Reference);
+
+								item.detail = `⚠️ Error Prevention: Not yet used in ${tName}.json`;
+
+								// Educational Warning
+								const docs = new vscode.MarkdownString();
+								docs.appendMarkdown(`### ⚠️ Context Warning\n`);
+								docs.appendMarkdown(`To use the \`${obj}\` object without errors, you **must** add this section/snippet to the **${tName}** template via the Shopify Customizer or by updating \`templates/${tName}.json\`.`);
+								item.documentation = docs;
+
+								item.sortText = "2_" + tName + obj;
+								items.push(item);
+							});
+						}
+					});
+
+					return items;
 				}
-				
 
-				// Pattern 2: User is typing an object name (Global Suggestions)
-				// If the line is empty or just started, suggest the main objects
-				// Pattern 2: User is typing an object name
-				if (linePrefix.trim().length > 0 && !linePrefix.includes('.')) {
-					return Object.keys(shopifyData).map(key => {
-						const obj = (shopifyData as any)[key];
-						const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Class);
+				// --- TRIGGER 2: "objectName:" (The Data Reference Paste) ---
+				const match = linePrefix.match(/(\w+):$/);
+				if (match) {
+					const objectName = match[1];
+					const data = (shopifyData as any)[objectName];
 
-						item.detail = "Shopify Global Object";
+					if (data) {
+						const item = new vscode.CompletionItem(`${objectName} Reference Structure`, vscode.CompletionItemKind.Snippet);
+
+						// Generate Mock JSON from shopify-data properties
+						const mockPreview: any = {};
+						Object.keys(data.properties).forEach(propKey => {
+							mockPreview[propKey] = data.properties[propKey].mock_value ?? "...";
+						});
 
 						const docs = new vscode.MarkdownString();
-						docs.appendMarkdown(`## 📦 ${key}\n`);
-						docs.appendMarkdown(`---\n`);
-						docs.appendMarkdown(`${obj.description}\n\n`);
-						docs.appendMarkdown(`[📚 Open Documentation](${obj.link})`);
+						docs.appendMarkdown(`### 📦 ${objectName} Object Reference\n`);
+						docs.appendCodeblock(JSON.stringify(mockPreview, null, 2), 'json');
+						docs.appendMarkdown(`\n[Official Documentation](${data.link})`);
 
 						item.documentation = docs;
-						return item;
-					});
+						item.detail = "Paste full schema as comment";
+
+						// Use your Paste-to-Comment feature
+						item.insertText = new vscode.SnippetString(
+							`\n{% comment %}\n  ${objectName.toUpperCase()} REFERENCE:\n  ${JSON.stringify(mockPreview, null, 2)}\n{% endcomment %}`
+						);
+
+						return [item];
+					}
 				}
 
 				return undefined;
 			}
 		},
-		'.' // Trigger character
+		':' // Only trigger on colon to keep it "Quiet" until needed
 	);
 
 	context.subscriptions.push(provider);
 }
 
-// Helper to convert our JSON properties to VS Code Completion Items
-function createCompletionItems(properties: any, baseLink: string, objectName: string) {
-	/*
-	"properties": {
-	   "title": { "description": "The title of the product.", "link": "#title" },
-	   "handle": { "description": "The unique handle of the product.", "link": "#handle" },
+/**
+ * Helper to identify if we are in a section, snippet, or template directory
+ */
+function getFileType(path: string): 'sections' | 'snippets' | 'templates' | 'unknown' {
+	const normalizedPath = path.replace(/\\/g, '/');
+	if (normalizedPath.includes('/sections/')) return 'sections';
+	if (normalizedPath.includes('/snippets/')) return 'snippets';
+	if (normalizedPath.includes('/templates/')) return 'templates';
+	return 'unknown';
+}
+
+async function getVerifiedTemplates(fileName: string, fileType: 'sections' | 'snippets' | 'templates'): Promise<string[]> {
+	let verified: string[] = [];
+
+    // --- NEW: SPECIAL API CONTEXTS ---
+    // If the file is named predictive-search, it's virtually guaranteed 
+    // to be used for the predictive search API context.
+    if (fileName === 'predictive-search' || fileName === 'predictive_search') {
+        verified.push('predictive_search'); 
+    }
+
+	if (fileType === 'templates') {
+		// If we are in product.liquid, the context is obviously 'product'
+		verified.push(fileName.split('.')[0]);
+		return verified;
 	}
-	*/
-    return Object.keys(properties).map(key => {
-        const prop = properties[key];
-        
-        // 1. Choose a different icon if it leads to another object (Nesting)
-        const itemKind = prop.type 
-            ? vscode.CompletionItemKind.Struct  // Icon for objects
-            : vscode.CompletionItemKind.Field;  // Icon for plain properties
 
-        const item = new vscode.CompletionItem(key, itemKind);
+	if (fileType === 'sections') {
+		// Sections logic (What you already have)
+		return await searchInJsonTemplates(fileName);
+	}
 
-        // 2. The 'Detail' appears right next to the name in the list
-        item.detail = prop.type ? `(Object: ${prop.type})` : `(Property)`;
+	if (fileType === 'snippets') {
+		// 1. Find all sections/templates that render this snippet
+		const parents = await findSnippetParents(fileName);
+		console.log("snippet parents:", parents)
+		// 2. For each parent, find its context
+		for (const parent of parents) {
+			if (parent.type === 'section') {
+				const sectionContexts = await searchInJsonTemplates(parent.name);
+				verified.push(...sectionContexts);
+			} else if (parent.type === 'template') {
+				// Split by dot to handle 'page.wholesale' -> 'page'
+			    const baseType = parent.name.split('.')[0];
+				verified.push(baseType);
+			}
+		}
+	}
 
-        // 3. The Documentation (Fly-out window)
-        const docs = new vscode.MarkdownString();
-        
-        // Header with Bold Name
-        docs.appendMarkdown(`### 🏷️ ${key}\n`);
-        
-        // Horizontal Rule
-        docs.appendMarkdown(`---\n`);
+	return [...new Set(verified)]; // Remove duplicates
+}
 
-        // Description
-        docs.appendMarkdown(`${prop.description}\n\n`);
+/**
+ * Specifically for Snippets: Finds which files use {% render 'my-snippet' %}
+ */
+async function findSnippetParents(snippetName: string): Promise<{ name: string, type: 'section' | 'template' }[]> {
+	const parents: { name: string, type: 'section' | 'template' }[] = [];
+	console.log("Finding parents for snippet:", snippetName)
+	// Search in sections and templates for the render tag
+	const files = await vscode.workspace.findFiles('/{sections,templates}/*.liquid');
+	console.log('Files to scan for snippet parents:', files)
+	for (const file of files) {
+		// const doc = await vscode.workspace.openTextDocument(file);
+		const fileUint8 = await vscode.workspace.fs.readFile(file);
+        const rawContent = Buffer.from(fileUint8).toString('utf8');
+		let content = rawContent;
 
-        // Usage Example (Code Block)
-        docs.appendMarkdown(`**Usage:**\n`);
-        docs.appendCodeblock(`{{ ${objectName}.${key} }}`, 'liquid');
+		// 1. STRIP LIQUID COMMENTS (Multi-line and Inline)
+		// This ensures we don't suggest objects for a snippet that is commented out!
+		content = content
+			.replace(/\{%\s*comment\s*%\}([\s\S]*?)\{%\s*endcomment\s*%\}/g, '') // {% comment %}
+			.replace(/\{%\s*#[\s\S]*?%\}/g, ''); // {% # inline comment %}
 
-        // Link with an Emoji
-        docs.appendMarkdown(`\n\n---\n[🔗 View Shopify Reference](${baseLink}${prop.link})`);
+		// 2. Updated Regex to handle 'render' and 'include' with single or double quotes
+		// We look for the tag and ensure it's not preceded by a [^a-zA-Z0-9] to be safe
+		const renderRegex = new RegExp(`\\{%\\s+(render|include)\\s+['"]${snippetName}['"]`, 'g');
 
-        // Allow links to be clickable
-        docs.isTrusted = true;
+		if (renderRegex.test(content)) {
+			console.log(`Found usage in: ${file.fsPath}`);
+			// 1. Normalize the path to use forward slashes for the check
+			const normalizedPath = file.fsPath.replace(/\\/g, '/');
+			// 2. Extract name
+			const name = file.fsPath.split(/[\\/]/).pop()?.replace('.liquid', '') || '';
+			// 3. Check using the normalized path
+			const type = normalizedPath.includes('/sections/') ? 'section' : 'template';
+			console.log(`Detected Type for ${name}: ${type}`); // Log this to verify
+			parents.push({ name, type });
+		}
+	}
+	return parents;
+}
 
-        item.documentation = docs;
+/**
+ * Re-usable logic to scan JSON templates for a section type
+ */
+async function searchInJsonTemplates(sectionName: string): Promise<string[]> {
+	console.log("sectionName in searchInJsonTemplates:", sectionName)
+	const contexts: string[] = [];
+	const files = await vscode.workspace.findFiles('/templates/**/*.json');
+	console.log('template files:', files)
 
-        return item;
-    });
+	for (const file of files) {
+		try {
+			const fileUint8 = await vscode.workspace.fs.readFile(file);
+            const rawContent = Buffer.from(fileUint8).toString('utf8');
+
+			// 1. STRIP COMMENTS: This regex removes multi-line /* */ and single-line // comments
+			const cleanContent = rawContent.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '');
+
+			// 2. PARSE the cleaned string
+			const content = JSON.parse(cleanContent);
+			const fileName = file.fsPath.split(/[\\/]/).pop() || '';
+			const tName = fileName.replace('.json', '');
+
+			if (content.sections && typeof content.sections === 'object') {
+				const isUsed = Object.values(content.sections).some((s: any) => {
+					// Handle cases where type might be missing or differently formatted
+					return s.type?.toLowerCase() === sectionName.toLowerCase();
+				});
+
+				if (isUsed) {
+					const normalizedPath = file.fsPath.replace(/\\/g, '/');
+					// EDGE CASE: If the path contains 'templates/metaobject/', 
+                    // the context object is ALWAYS 'metaobject'
+                    if (normalizedPath.includes('/templates/metaobject/')) {
+                        contexts.push('metaobject');
+                    } else {
+                        // Regular templates (product, collection, index)
+                        const fileName = file.fsPath.split(/[\\/]/).pop() || '';
+                        contexts.push(fileName.split('.')[0]);
+                    }
+				}
+			}
+		} catch (e) {
+			// Log the error so you know if a specific file is failing
+			console.error(`Error parsing ${file.fsPath}:`, e);
+		}
+	}
+	return contexts;
 }
 
 export function deactivate() { }
